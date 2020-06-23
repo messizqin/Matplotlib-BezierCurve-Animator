@@ -10,19 +10,19 @@ Data science application for free distribution<br />
 <hr />
 <h3><u>Bezier Curve Level 2</u></h3>
 
-![image](https://github.com/Weilory/matplotlib-bezier-curve-animator/blob/master/docs/gif/level2.gif)
+![l2](https://github.com/Weilory/Matplotlib-BezierCurve-Animator/blob/master/docs/gif/level2.gif)
 
 <h3><u>Bezier Curve Level 3</u></h3>
 
-![image](https://github.com/Weilory/matplotlib-bezier-curve-animator/blob/master/docs/gif/level3.gif)
+![l3](https://github.com/Weilory/Matplotlib-BezierCurve-Animator/blob/master/docs/gif/level3.gif)
 
 <h3><u>Bezier Curve Level 7</u></h3>
 
-![image](https://github.com/Weilory/matplotlib-bezier-curve-animator/blob/master/docs/gif/level7.gif)
+![l7](https://github.com/Weilory/Matplotlib-BezierCurve-Animator/blob/master/docs/gif/level7.gif)
 
 <h3><u>Bezier Curve Level 12</u></h3>
 
-![image](https://github.com/Weilory/matplotlib-bezier-curve-animator/blob/master/docs/gif/level12.gif)
+![l12](https://github.com/Weilory/Matplotlib-BezierCurve-Animator/blob/master/docs/gif/level12.gif)
 
 <br /><br />
 <h1>Requirements</h1>
