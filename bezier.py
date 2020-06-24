@@ -79,14 +79,27 @@ class Bezier:
             points.append([d, y_[i]])
         return points
 
-    def __init__(self, fig, points, n, interval):
+    @staticmethod
+    def red(num):
+        if num == 0:
+            return 1
+        val = 1
+        for i in range(num + 1):
+            if i != 0:
+                val *= i
+        return val
+
+    @staticmethod
+    def pascal(row, col):
+        return Bezier.red(row) / float(Bezier.red(col) * Bezier.red(row - col))
+
+    def __init__(self, fig, points, n=100, interval=50):
         self.fig = fig
         self.points = points
         self.n = n
         self.level = len(points)
         self.animate = {}
         self.interval = interval
-        self.fr = [i for i in range(n)]
         self.x_on_left = []
         self.x_on_right = []
         self.y_on_left = []
@@ -95,6 +108,25 @@ class Bezier:
         self.reduced = {"x": [], "y": []}
         self.color = Color(max_intensity=50)
         self.gray = Color(gray=True)
+
+    def beach(self, t):
+        row = len(self.points) - 1
+        dx = 0
+        dy = 0
+        for i in range(row + 1):
+            pre = Bezier.pascal(row, i) * ((1 - t) ** (row - i)) * (t ** i)
+            dx += pre * self.points[i][0]
+            dy += pre * self.points[i][1]
+        return [dx, dy]
+
+    def collect_bezier(self):
+        ad = 0
+        part = 1 / (self.n - 1.0)
+        collect = []
+        for i in range(self.n - 1):
+            collect.append(self.beach(ad))
+            ad += part
+        return collect
 
     def store(self, x_res, y_res):
         self.reduced['x'].append(x_res)
@@ -137,14 +169,14 @@ class Bezier:
 
         x_res = []
         y_res = []
-        for i in range(self.n):
+        for i in range(len(left_x)):
             x_res.append(left_x[i] + ((right_x[i] - left_x[i]) * float(i / (self.n - 1))))
             y_res.append(left_y[i] + ((right_y[i] - left_y[i]) * float(i / (self.n - 1))))
 
         self.store(x_res, y_res)
         p, = plt.plot(x_res[0], y_res[0], "o", color=color)
 
-        return FuncAnimation(fig=self.fig, func=update, init_func=init, frames=self.fr,
+        return FuncAnimation(fig=self.fig, func=update, init_func=init, frames=[x for x in range(len(left_x))],
                              interval=self.interval, repeat=False)
 
     def line_animate(self, x_left, y_left, x_right, y_right, color):
@@ -158,7 +190,7 @@ class Bezier:
             p.set_data([x_left[0], x_right[0]], [y_left[0], y_right[0]])
             return p,
 
-        return FuncAnimation(fig=self.fig, func=update, init_func=init, frames=self.fr,
+        return FuncAnimation(fig=self.fig, func=update, init_func=init, frames=[x for x in range(len(x_left))],
                              interval=self.interval, repeat=False)
 
     def init(self):
@@ -198,6 +230,25 @@ class Bezier:
             if lk == depth:
                 return
 
+    def animate_sketch(self):
+        collect = self.collect_bezier()
+        left_x = []
+        left_y = []
+        right_x = []
+        right_y = []
+        for i in range(len(collect)):
+            if i <= len(collect) - 2:
+                left_x.append(collect[i][0])
+                left_y.append(collect[i][1])
+                right_x.append(collect[i + 1][0])
+                right_y.append(collect[i + 1][1])
+        if isinstance(self.color, Color):
+            self.add_animate(1, (self.vector_animate(left_x, left_y, right_x, right_y, self.color.new)))
+            self.add_animate(1, (self.line_animate(left_x, left_y, right_x, right_y, self.color.last)))
+        else:
+            self.add_animate(1, (self.vector_animate(left_x, left_y, right_x, right_y, self.color)))
+            self.add_animate(1, (self.line_animate(left_x, left_y, right_x, right_y, self.color)))
+
 
 def illustrate(fig, points, n=100, interval=100, depth=None, color=None):
     be = Bezier(fig, points, n, interval)
@@ -207,23 +258,40 @@ def illustrate(fig, points, n=100, interval=100, depth=None, color=None):
     return be
 
 
+def sketch(fig, points, n=100, color=None):
+    be = Bezier(fig, points, n)
+    if color is not None:
+        be.color = color
+    be.animate_sketch()
+    return be
+
+
 if __name__ == '__main__':
-    def example(lim_x, lim_y, n):
-        dx = float((lim_x[1] - lim_x[0]) / n)
-        x_arr = []
-        y_arr = []
-        for i in range(n + 1):
-            x_arr.append(lim_x[0] + dx * i)
-            y_arr.append(randint(int(lim_y[0]), int(lim_y[1])))
-        return x_arr, y_arr
+    ind = randint(0, 1)
+    if ind == 0:
+        # option 1: illustrate all animation
+        def example(lim_x, lim_y, n):
+            dx = float((lim_x[1] - lim_x[0]) / n)
+            x_arr = []
+            y_arr = []
+            for i in range(n + 1):
+                x_arr.append(lim_x[0] + dx * i)
+                y_arr.append(randint(int(lim_y[0]), int(lim_y[1])))
+            return x_arr, y_arr
 
-    fig = plt.figure()
-    x_lim = (-20, 20)
-    y_lim = (-20, 20)
-    plt.xlim(*x_lim)
-    plt.ylim(*y_lim)
-    points = Bezier.backward(*example(x_lim, y_lim, 3))
-    b = illustrate(fig, points, interval=50, n=100, depth=4)
-    plt.show()
-
+        fig = plt.figure()
+        x_lim = (-20, 20)
+        y_lim = (-20, 20)
+        plt.xlim(*x_lim)
+        plt.ylim(*y_lim)
+        points = Bezier.backward(*example(x_lim, y_lim, 3))
+        b = illustrate(fig, points, interval=50, n=100, depth=4)
+        plt.show()
+    else:
+        # option 2: sketch bezier path
+        fig = plt.figure()
+        plt.xlim(-1, 11)
+        plt.ylim(-2, 8)
+        b = sketch(fig, [[0, 0], [5, 5], [10, 0]], color='b')
+        plt.show()
 
