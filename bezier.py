@@ -178,8 +178,12 @@ class Bezier:
             x_l = self.x_on_right[i]
             l_y = self.y_on_left[i]
             y_l = self.y_on_right[i]
-            self.add_animate(self.level, self.vector_animate(l_x, l_y, x_l, y_l, self.color.new))
-            self.add_animate(self.level, self.line_animate(l_x, l_y, x_l, y_l, self.color.last))
+            if isinstance(self.color, Color):
+                self.add_animate(self.level, self.vector_animate(l_x, l_y, x_l, y_l, self.color.new))
+                self.add_animate(self.level, self.line_animate(l_x, l_y, x_l, y_l, self.color.last))
+            else:
+                self.add_animate(self.level, self.vector_animate(l_x, l_y, x_l, y_l, self.color))
+                self.add_animate(self.level, self.line_animate(l_x, l_y, x_l, y_l, self.color))
 
     def loop(self, depth):
         lk = 0
@@ -195,11 +199,12 @@ class Bezier:
                 return
 
 
-    @staticmethod
-    def illustrate(fig, points, n=100, interval=100, depth=None):
-        be = Bezier(fig, points, n, interval)
-        be.loop(depth)
-        return be
+def illustrate(fig, points, n=100, interval=100, depth=None, color=None):
+    be = Bezier(fig, points, n, interval)
+    if color is not None:
+        be.color = color
+    be.loop(depth)
+    return be
 
 
 if __name__ == '__main__':
@@ -217,7 +222,8 @@ if __name__ == '__main__':
     y_lim = (-20, 20)
     plt.xlim(*x_lim)
     plt.ylim(*y_lim)
-    points = Bezier.backward(*example(x_lim, y_lim, 4))
-    b = Bezier.illustrate(fig, points, interval=50, n=100, depth=4)
+    points = Bezier.backward(*example(x_lim, y_lim, 3))
+    b = illustrate(fig, points, interval=50, n=100, depth=4)
     plt.show()
+
 
