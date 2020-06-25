@@ -93,7 +93,7 @@ class Bezier:
     def pascal(row, col):
         return Bezier.red(row) / float(Bezier.red(col) * Bezier.red(row - col))
 
-    def __init__(self, fig, points, n=100, interval=50):
+    def __init__(self, fig, points=None, n=100, interval=50):
         self.fig = fig
         self.points = points
         self.n = n
