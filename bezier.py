@@ -156,10 +156,11 @@ class Bezier:
         except KeyError:
             self.animate[level] = [animation]
 
-    def vector_animate(self, left_x, left_y, right_x, right_y, color):
+    def vector_animate(self, left_x, left_y, right_x, right_y, color, no_line=False):
         def update(frame):
-            if frame != 0:
-                plt.plot([x_res[frame - 1], x_res[frame]], [y_res[frame - 1], y_res[frame]], color=color)
+            if not no_line:
+                if frame != 0:
+                    plt.plot([x_res[frame - 1], x_res[frame]], [y_res[frame - 1], y_res[frame]], color=color)
             p.set_data(x_res[frame], y_res[frame])
             return p,
 
@@ -267,7 +268,7 @@ def sketch(fig, points, n=100, color=None):
 
 
 if __name__ == '__main__':
-    ind = randint(0, 1)
+    ind = randint(0, 2)
     if ind == 0:
         # option 1: illustrate all animation
         def example(lim_x, lim_y, n):
@@ -284,14 +285,29 @@ if __name__ == '__main__':
         y_lim = (-20, 20)
         plt.xlim(*x_lim)
         plt.ylim(*y_lim)
-        points = Bezier.backward(*example(x_lim, y_lim, 3))
+        points = Bezier.backward(*example(x_lim, y_lim, 4))
         b = illustrate(fig, points, interval=50, n=100, depth=4)
         plt.show()
-    else:
+    elif ind == 1:
         # option 2: sketch bezier path
         fig = plt.figure()
         plt.xlim(-1, 11)
         plt.ylim(-2, 8)
         b = sketch(fig, [[0, 0], [5, 5], [10, 0]], color='b')
         plt.show()
+    elif ind == 2:
+        import numpy as np
+        # option 3: animate a moving line and dot transformation
+        fig = plt.figure()
+        plt.xlim(0, 10)
+        plt.ylim(0, 10)
+        left_x = np.linspace(2, 8, 100)
+        left_y = [8 for x in range(100)]
+        right_x = np.linspace(2, 8, 100)
+        right_y = [2 for x in range(100)]
+        b = Bezier(fig, [])
+        a1 = b.vector_animate(left_x, left_y, right_x, right_y, color='k', no_line=True)
+        a2 = b.line_animate(left_x, left_y, right_x, right_y, color='b')
+        plt.show()
+
 
