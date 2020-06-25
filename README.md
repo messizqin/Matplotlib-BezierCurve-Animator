@@ -36,6 +36,8 @@ Data science application for free distribution<br />
 <h1>Usage</h1>
 <hr />
 
+<b>Illustrate all animation of a bezier curve</b>
+
 ```
 from matplotlib import pyplot as plt
 from bezier import illustrate
@@ -45,6 +47,39 @@ fig = plt.figure()
 points = [[0, 0], [3, 3], [6, 0]]
 b = illustrate(fig, points, interval=50, n=100)
 
+plt.show()
+```
+
+<b>Sketch a bezier curve</b>
+
+```
+from matplotlib import pyplot as plt
+from bezier import sketch
+
+fig = plt.figure()
+plt.xlim(-1, 11)
+plt.ylim(-2, 8)
+b = sketch(fig, [[0, 0], [5, 5], [10, 0]], color='b')
+plt.show()
+```
+
+<b>Moving line, moving dot motion</b>
+
+```
+from matplotlib import pyplot as plt
+from bezier import Bezier
+import numpy as np
+
+fig = plt.figure()
+plt.xlim(0, 10)
+plt.ylim(0, 10)
+left_x = np.linspace(2, 8, 100)
+left_y = [8 for x in range(100)]
+right_x = np.linspace(2, 8, 100)
+right_y = [2 for x in range(100)]
+b = Bezier(fig)
+a1 = b.vector_animate(left_x, left_y, right_x, right_y, color='k', no_line=True)
+a2 = b.line_animate(left_x, left_y, right_x, right_y, color='b')
 plt.show()
 ```
 
