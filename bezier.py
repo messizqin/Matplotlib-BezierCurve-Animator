@@ -266,10 +266,6 @@ class Bezier:
 
     # second+ recursion 
     def run(self):
-        if len(self.x_on_left) == 0:
-            print('fucked')
-        else:
-            print('succeed')
         for i, l_x in enumerate(self.x_on_left):
             x_l = self.x_on_right[i]
             l_y = self.y_on_left[i]
